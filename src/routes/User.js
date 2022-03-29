@@ -3,8 +3,8 @@ const pool = require('./Database');
 const router = express.Router();
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const appsettings = require('../../appsettings.json')
+const appsettings = require('../../appsettings.json');
+const jwt = require('../helpers/jwt.js')
 
 const corsOptions = {
     origin: 'http://localhost:3000',
@@ -28,7 +28,7 @@ const isEmailValid = (email) => {
 
 }
 
-const isValidUsername = async (username) => {
+const isUsernameValid = async (username) => {
     return new Promise(async (resolve, reject) => {
         const query = 'SELECT COUNT(*) as idCount FROM users WHERE username = ?';
         pool.query(query, [username], async (err, rows) => {
@@ -41,15 +41,17 @@ const isValidUsername = async (username) => {
     });
 }
 
-router.post('/user', async (req, res) => {
-    res.set({
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': '*',
-        'Access-Control-Allow-Methods': 'POST,GET,DELETE,PUT,OPTIONS'
-    });
+router.post('/user/check', async (req, res) => {
+    const { username, email } = req.body;
+    const validUsername = await isUsernameValid(username);
+    const validEmail = await isEmailValid(email);
 
+    res.send({ validUsername, validEmail });
+})
+
+router.post('/user', async (req, res) => {
     const validEmail = await isEmailValid(req.body.email);
-    const validUsername = await isValidUsername(req.body.username);
+    const validUsername = await isUsernameValid(req.body.username);
 
     if (validEmail && validUsername) {
         bcrypt.genSalt(10, async (err, salt) => {
@@ -88,8 +90,6 @@ router.post('/user', async (req, res) => {
 })
 
 router.post('/user/login', async (req, res) => {
-    console.log(appsettings.keys.ACCESS_SECRET_KEY);
-
     const credentials = {
         username: req.body.username,
         password: req.body.password
@@ -117,14 +117,7 @@ router.post('/user/login', async (req, res) => {
                 res.sendStatus(403, { status: 'Invalid credentials' });
             } else {
                 delete user.password;
-                let token = await new Promise(async (resolve, reject) => {
-                    jwt.sign({ authData: { user } }, appsettings.keys.ACCESS_SECRET_KEY, (err, token) => {
-                        if (err) {
-                            return reject(err);
-                        }
-                        return resolve(token);
-                    });
-                })
+                let token = await jwt.token(user);
 
                 //Cookie expiration time (1 hour) 
                 let now = new Date();
@@ -148,26 +141,31 @@ router.post('/user/login', async (req, res) => {
     }
 })
 
-//Authorization: Bearer <token>
-const verifyToken = (req, res, next) => {
-    const bearerHeader = req.headers['authorization']
-    if (typeof bearerHeader !== 'undefined') {
-        const bearerToken = bearerHeader.split(' ')[1];
-        req.token = bearerToken;
-        next();
+router.post('/user/shorteredlinks', jwt.checkForToken, async (req, res) => {
+    let user = await jwt.verifyToken(req.token);
+
+    if (typeof user !== 'undefined') {
+        const query = 'SELECT * FROM shorteredlinks where user = ?';
+        pool.query(query, [user.id], async (err, rows) => {
+            if (err) {
+                console.log(err);
+            } else {
+                res.json(rows);
+            }
+        });
     } else {
         res.sendStatus(403);
     }
-}
 
-router.post('/user/post', verifyToken, (req, res) => {
-    jwt.verify(req.token, appsettings.keys.ACCESS_SECRET_KEY, (err, data) => {
-        if (err) {
-            res.sendStatus(403);
-        } else {
-            res.send({ status: 'User is ok', ...data })
-        }
-    })
-})
+});
+
+router.post('/user/restoresession', jwt.checkForToken, async (req, res) => {
+    const user = await jwt.verifyToken(req.token);
+    if (typeof user !== 'undefined') {
+        res.send({user});
+    } else {
+        res.send({ user: null });
+    }
+});
 
 module.exports = router;
