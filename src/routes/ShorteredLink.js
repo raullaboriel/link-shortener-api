@@ -134,6 +134,8 @@ router.delete('/shorteredlink', jwt.checkForToken, async (req, res) => {
     }
 });
 
-
+router.get(('/'), async (req, res) => {
+    res.json({message: "Hola mundo"})
+})
 
 module.exports = router;
