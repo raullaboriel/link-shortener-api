@@ -3,7 +3,6 @@ const app = express();
 
 const port = process.env.PORT || 5000;
 
-
 app.enable('trust proxy')
 app.set('trust proxy', 1);
 
