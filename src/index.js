@@ -12,7 +12,7 @@ app.listen(port, () => {
     console.log(`LinkShortener API listen on port ${port}`)
 })
 
-app.set("trust proxy", 1);
+app.enable('trust proxy')
 
 app.get('/', async (req, res) => {
     res.json({ status: 'Welcome to LinkShortener! :D' })
