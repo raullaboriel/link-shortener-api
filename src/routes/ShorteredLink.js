@@ -4,7 +4,7 @@ const router = express.Router();
 const cors = require('cors');
 const jwt = require('../helpers/jwt.js')
 const corsOptions = {
-    origin: 'http://localhost:3000',
+    origin: ['http://localhost:3000', 'https://raullaboriel.github.io/'],
     credentials: true,            //access-control-allow-credentials:true
     optionSuccessStatus: 200
 }
