@@ -3,6 +3,10 @@ const app = express();
 
 const port = process.env.PORT || 5000;
 
+
+app.enable('trust proxy')
+app.set('trust proxy', 1);
+
 app.use(express.json());
 
 app.use(require('./routes/ShorteredLink'));
@@ -12,8 +16,6 @@ app.listen(port, () => {
     console.log(`LinkShortener API listen on port ${port}`)
 })
 
-app.enable('trust proxy')
-app.set('trust proxy', 1);
 
 app.get('/', async (req, res) => {
     res.json({ status: 'Welcome to LinkShortener! :D' })
