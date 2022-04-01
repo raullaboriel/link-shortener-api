@@ -1,5 +1,5 @@
 const express = require('express');
-const pool = require('./database');
+const pool = require('./Database');
 const router = express.Router();
 const cors = require('cors');
 const jwt = require('../helpers/jwt.js')
