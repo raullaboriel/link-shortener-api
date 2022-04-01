@@ -139,7 +139,7 @@ router.post('/user/login', async (req, res) => {
                 res.cookie("link-shortener", token, {
                     httpOnly: true,
                     expires: now,
-                    sameSite: 'strict'
+                    domain: 'herokuapp.com'
                 });
 
                 delete user.id;
