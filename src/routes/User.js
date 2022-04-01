@@ -137,10 +137,9 @@ router.post('/user/login', async (req, res) => {
                 //now.setTime(time);
 
                 res.cookie("link-shortener", token, {
-                    path: '/',
                     httpOnly: true,
                     expires: now,
-
+                    sameSite: 'lax'
                 });
 
                 delete user.id;
