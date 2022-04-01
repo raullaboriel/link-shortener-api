@@ -13,7 +13,7 @@ app.listen(port, () => {
 })
 
 app.enable('trust proxy')
-res.set('trust proxy', 1);
+app.set('trust proxy', 1);
 
 app.get('/', async (req, res) => {
     res.json({ status: 'Welcome to LinkShortener! :D' })
