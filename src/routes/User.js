@@ -136,8 +136,6 @@ router.post('/user/login', async (req, res) => {
                 //time += 3600 * 1000;
                 //now.setTime(time);
 
-                express().set("trust proxy", 1)
-
                 res.cookie("link-shortener", token, {
                     path: '/',
                     httpOnly: true,
