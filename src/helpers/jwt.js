@@ -1,5 +1,8 @@
 const jwt = require('jsonwebtoken');
-const appsettings = require('../../appsettings.json')
+
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config();
+}
 
 const checkForToken = (req, res, next) => {
     const cookie = req.headers['cookie'];
@@ -15,7 +18,7 @@ const checkForToken = (req, res, next) => {
 
 const token = async (user) => {
     return new Promise(async (resolve, reject) => {
-        jwt.sign({ authData: { user } }, appsettings.keys.ACCESS_SECRET_KEY, (err, token) => {
+        jwt.sign({ authData: { user } }, process.env.ACCESS_KEY, (err, token) => {
             if (err) {
                 return reject(err);
             }
@@ -26,7 +29,7 @@ const token = async (user) => {
 
 const verifyToken = async (token) => {
     let user;
-    jwt.verify(token, appsettings.keys.ACCESS_SECRET_KEY, async (err, data) => {
+    jwt.verify(token, process.env.ACCESS_KEY, async (err, data) => {
         if (err) {
             user = undefined;
         } else {

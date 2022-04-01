@@ -3,7 +3,6 @@ const pool = require('./Database');
 const router = express.Router();
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
-const appsettings = require('../../appsettings.json');
 const jwt = require('../helpers/jwt.js')
 
 const corsOptions = {
@@ -40,6 +39,8 @@ const isUsernameValid = async (username) => {
         })
     });
 }
+
+//Routes
 
 router.post('/user/check', async (req, res) => {
     const { username, email } = req.body;
@@ -121,9 +122,10 @@ router.post('/user/login', async (req, res) => {
 
                 //Cookie expiration time (1 hour) 
                 let now = new Date();
-                let time = now.getTime();
-                time += 3600 * 1000;
-                now.setTime(time);
+                now.setFullYear(now.getFullYear() + 10);
+                //let time = now.getTime();
+                //time += 3600 * 1000;
+                //now.setTime(time);
 
                 res.cookie("link-shortener", token, {
                     secure: false,
@@ -162,10 +164,15 @@ router.post('/user/shorteredlinks', jwt.checkForToken, async (req, res) => {
 router.post('/user/restoresession', jwt.checkForToken, async (req, res) => {
     const user = await jwt.verifyToken(req.token);
     if (typeof user !== 'undefined') {
-        res.send({user});
+        res.send({ user });
     } else {
         res.send({ user: null });
     }
+});
+
+router.post('/user/logout', async (req, res) => {
+    res.clearCookie('link-shortener');
+    res.end();
 });
 
 module.exports = router;

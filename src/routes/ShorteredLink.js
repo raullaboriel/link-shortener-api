@@ -57,7 +57,7 @@ const generateShorteredRoute = async () => {
 }
 
 //Routes
-router.get('/:shorteredRoute', async (req, res) => {
+router.get('/shorteredlink/:shorteredRoute', async (req, res) => {
     const { shorteredRoute } = req.params;
 
     const query = 'SELECT * FROM shorteredlinks WHERE shorteredroute = ?';
@@ -76,9 +76,17 @@ router.get('/:shorteredRoute', async (req, res) => {
     });
 })
 
-router.post('/', jwt.checkForToken, async (req, res) => {
+router.post('/shorteredlink', jwt.checkForToken, async (req, res) => {
     let { originalLink } = req.body;
-    const id = (await jwt.verifyToken(req.token)).id || null;
+    let user = await jwt.verifyToken(req.token)
+
+    let userId;
+    if (typeof user === 'undefined') {
+        userId = null;
+        console.log(userId);
+    } else {
+        userId = user.id;
+    }
 
     const query = 'INSERT INTO shorteredlinks VALUES(?, ?, ?, ?)';
     const shorteredRoute = await generateShorteredRoute();
@@ -88,12 +96,12 @@ router.post('/', jwt.checkForToken, async (req, res) => {
     }
 
     if (validURL(originalLink)) {
-        pool.query(query, [0, originalLink, shorteredRoute, id], (err) => {
+        pool.query(query, [0, originalLink, shorteredRoute, userId], (err) => {
             if (err) {
                 console.log(err);
             } else {
                 res.statusCode = 200;
-                res.send({ status: 'Link shortered successfully', shorteredRoute });
+                res.send({ status: 'Link shortered successfully', shorteredLink: { shorteredRoute, userId } });
             }
         })
     } else {
@@ -102,16 +110,17 @@ router.post('/', jwt.checkForToken, async (req, res) => {
     }
 });
 
-router.delete('/', jwt.checkForToken, async (req, res) => {
+router.delete('/shorteredlink', jwt.checkForToken, async (req, res) => {
     const { shorteredRoute } = req.body;
-    const id = await jwt.verifyToken(req.token).id || undefined;
+    const id = (await jwt.verifyToken(req.token)).id || undefined;
 
     if (typeof id !== 'undefined') {
         const query = 'DELETE FROM shorteredlinks WHERE shorteredroute = ? AND user = ?'
-        pool.query(query, [shorteredRoute, id], (err, rows) => {
-            const affectedRows = JSON.stringify(rows).affectedRows;
+        pool.query(query, [shorteredRoute, id], async (err, rows) => {
+            const affectedRows = (await rows).affectedRows || 0;
             if (err) {
                 console.log(err);
+                return;
             } else if (affectedRows === 1) {
                 res.statusCode = 200;
                 res.send({ status: 'Shortered revomed link successfully' });
@@ -119,7 +128,7 @@ router.delete('/', jwt.checkForToken, async (req, res) => {
                 res.statusCode = 400;
                 res.send({ status: 'Failed when trying to remove the shortered link' });
             }
-        })
+        });
     } else {
         res.sendStatus(403);
     }

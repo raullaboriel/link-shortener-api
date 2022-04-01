@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon ./src/index.js"
+    "dev": "nodemon ./src/index.js",
+    "start": "node index.js"
   },
   "author": "laexR",
   "license": "ISC",
@@ -14,5 +15,8 @@
     "express": "^4.17.3",
     "jsonwebtoken": "^8.5.1",
     "mysql": "^2.18.1"
+  },
+  "devDependencies": {
+    "dotenv": "^16.0.0"
   }
 }
