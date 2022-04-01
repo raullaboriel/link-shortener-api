@@ -122,7 +122,12 @@ router.post('/shorteredlink', jwt.checkForToken, async (req, res) => {
 
 router.delete('/shorteredlink', jwt.checkForToken, async (req, res) => {
     const { shorteredRoute } = req.body;
-    const id = (await jwt.verifyToken(req.token)).id || undefined;
+    
+    if (typeof await jwt.verifyToken(req.token) !== 'undefined') {
+        id = (await jwt.verifyToken(req.token)).id;
+    } else {
+        id = undefined;
+    }
 
     if (typeof id !== 'undefined') {
         const query = 'DELETE FROM shorteredlinks WHERE shorteredroute = ? AND user = ?'
