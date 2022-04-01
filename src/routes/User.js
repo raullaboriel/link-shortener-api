@@ -136,10 +136,13 @@ router.post('/user/login', async (req, res) => {
                 //time += 3600 * 1000;
                 //now.setTime(time);
 
+                express().set("trust proxy", 1)
+
                 res.cookie("link-shortener", token, {
-                    secure: true,
+                    path: '/',
                     httpOnly: true,
                     expires: now,
+
                 });
 
                 delete user.id;
