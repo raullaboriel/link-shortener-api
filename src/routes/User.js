@@ -5,13 +5,22 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('../helpers/jwt.js')
 
-const corsOptions = {
-    origin: ['http://localhost:3000', 'https://raullaboriel.github.io'],
+let corsOptions = {
     credentials: true,            //access-control-allow-credentials:true
     optionSuccessStatus: 200
 }
 
-router.use(cors(corsOptions));
+var allowlist = ['http://localhost:3000', 'https://raullaboriel.github.io']
+var corsOptionsDelegate = function (req, callback) {
+    if (allowlist.indexOf(req.header('Origin')) !== -1) {
+        corsOptions = { ...corsOptions, origin: true } // reflect (enable) the requested origin in the CORS response
+    } else {
+        corsOptions = { ...corsOptions, origin: false } // disable CORS for this request
+    }
+    callback(null, corsOptions) // callback expects two parameters: error and options
+}
+
+router.use(cors(corsOptionsDelegate));
 
 const isEmailValid = (email) => {
     return new Promise((resolve, reject) => {
