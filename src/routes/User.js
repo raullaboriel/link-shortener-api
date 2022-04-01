@@ -137,7 +137,7 @@ router.post('/user/login', async (req, res) => {
                 //now.setTime(time);
 
                 res.cookie("link-shortener", token, {
-                    secure: false,
+                    secure: true,
                     httpOnly: true,
                     expires: now,
                 });
