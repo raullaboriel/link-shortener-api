@@ -51,7 +51,7 @@ const generateShorteredRoute = async () => {
         } catch (e) {
             console.log(e);
         }
-    } while (!isValid);
+    } while (!isValid); 
 
     return shorteredRoute;
 }
