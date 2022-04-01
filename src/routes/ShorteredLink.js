@@ -93,7 +93,6 @@ router.post('/shorteredlink', jwt.checkForToken, async (req, res) => {
     let userId;
     if (typeof user === 'undefined') {
         userId = null;
-        console.log(userId);
     } else {
         userId = user.id;
     }
