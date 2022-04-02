@@ -10,7 +10,7 @@ let corsOptions = {
     optionSuccessStatus: 200
 }
 
-var allowlist = ['http://localhost:3000', 'https://raullaboriel.github.io', 'https://lilink.herokuapp.com']
+var allowlist = ['http://localhost:3000', 'https://raullaboriel.github.io', 'https://lilink.herokuapp.com', 'http://lilink.herokuapp.com']
 var corsOptionsDelegate = function (req, callback) {
     if (allowlist.indexOf(req.header('Origin')) !== -1) {
         corsOptions = { ...corsOptions, origin: true } // reflect (enable) the requested origin in the CORS response
