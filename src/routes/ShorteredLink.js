@@ -88,7 +88,7 @@ router.get('/shorteredlink/:shorteredRoute', async (req, res) => {
 
 router.post('/shorteredlink', jwt.checkForToken, async (req, res) => {
     let { originalLink } = req.body;
-    let user = await jwt.verifyToken(req.token)
+    let user = undefined            //When cookies working allow -> await jwt.verifyToken(req.token)
 
     let userId;
     if (typeof user === 'undefined') {
