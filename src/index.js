@@ -14,7 +14,6 @@ app.listen(port, () => {
     console.log(`LinkShortener API listen on port ${port}`)
 })
 
-
 app.get('/', async (req, res) => {
     res.json({ status: 'Welcome to LinkShortener! :D' })
 })
