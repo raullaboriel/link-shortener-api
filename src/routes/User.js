@@ -130,15 +130,13 @@ router.post('/user/login', async (req, res) => {
                 let token = await jwt.token(user);
 
                 //Cookie expiration time (1 hour) 
-                let now = new Date();
-                now.setFullYear(now.getFullYear() + 10);
-                //let time = now.getTime();
-                //time += 3600 * 1000;
-                //now.setTime(time);
+                let expirationDate = new Date();
+                expirationDate.setFullYear(expirationDate.getFullYear() + 10);
 
                 res.cookie("link-shortener", token, {
                     httpOnly: true,
-                    expires: now,
+                    expires: expirationDate,
+                    secure: process.env.NODE_ENV === 'production',  
                 });
 
                 delete user.id;
