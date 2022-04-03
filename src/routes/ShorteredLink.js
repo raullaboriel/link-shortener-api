@@ -105,14 +105,19 @@ router.post('/shorteredlink', jwt.checkForToken, async (req, res) => {
     }
 
     if (validURL(originalLink)) {
-        pool.query(query, [0, originalLink, shorteredRoute, userId], (err) => {
-            if (err) {
-                console.log(err);
-            } else {
-                res.statusCode = 200;
-                res.send({ status: 'Link shortered successfully', shorteredLink: { shorteredRoute, userId } });
-            }
-        })
+        if (originalLink.startsWith('https://lilink.herokuapp.com') || originalLink.startsWith('lilink.herokuapp.com')) {
+            res.status = 400;
+            res.send({ status: "Error the provided link is already shortered." })
+        } else {
+            pool.query(query, [0, originalLink, shorteredRoute, userId], (err) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    res.statusCode = 200;
+                    res.send({ status: 'Link shortered successfully', shorteredLink: { shorteredRoute, userId } });
+                }
+            })
+        }
     } else {
         res.statusCode = 400;
         res.send({ status: `Error invalid link` })
@@ -121,7 +126,7 @@ router.post('/shorteredlink', jwt.checkForToken, async (req, res) => {
 
 router.delete('/shorteredlink', jwt.checkForToken, async (req, res) => {
     const { shorteredRoute } = req.body;
-    
+
     if (typeof await jwt.verifyToken(req.token) !== 'undefined') {
         id = (await jwt.verifyToken(req.token)).id;
     } else {
