@@ -136,6 +136,7 @@ router.post('/user/login', async (req, res) => {
                 res.cookie("link-shortener", token, {
                     httpOnly: true,
                     expires: expirationDate,
+                    domain: 'lilink.click'
                 });
 
                 delete user.id;
