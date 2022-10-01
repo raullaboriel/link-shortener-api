@@ -105,7 +105,7 @@ router.post('/shorteredlink', jwt.checkForToken, async (req, res) => {
     }
 
     if (validURL(originalLink)) {
-        if (originalLink.startsWith('https://lilink.herokuapp.com') || originalLink.startsWith('lilink.herokuapp.com')) {
+        if (originalLink.startsWith('https://lilink.click') || originalLink.startsWith('lilink.click')) {
             res.status = 400;
             res.send({ status: "Error the provided link is already shortered." })
         } else {
