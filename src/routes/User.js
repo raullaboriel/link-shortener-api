@@ -177,7 +177,11 @@ router.post('/user/restoresession', jwt.checkForToken, async (req, res) => {
 });
 
 router.post('/user/logout', async (req, res) => {
-    res.clearCookie('link-shortener');
+    res.cookie("link-shortener", "", {
+        domain: ".lilink.click",
+        expires: Date.now(),
+        maxAge: 0,
+    });
     res.end();
 });
 
